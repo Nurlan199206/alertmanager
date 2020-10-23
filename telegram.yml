@@ -1,0 +1,39 @@
+/etc/prometheus/telegram.yml
+=============================================
+groups:
+  - name: slack
+    rules:
+    - alert: prod-nfs.hsbk.nb disk space
+      expr: nfs_available_disk{instance="XXXXXX:9100",job="prometheus"} < 80
+      for: 1m
+      description: disk space less than 80 GB. Current value is {{ $value }} GB.
+
+  - name: telegram
+    rules:
+    - alert: Node Down
+      expr: up{job="OpenShift"} == 0
+      for: 1m
+      labels:
+      severity: warning
+      annotations:
+        title: Node {{ $labels.instance }} is down
+        description: Failed to scrape {{ $labels.job }} on {{ $labels.instance }} for more than 1 minutes. Node seems down.
+
+  - name: gitlab
+    rules:
+    - alert: GitLab disk space
+      expr: nfs_available_disk{instance="XXXXX:9100",job="prometheus"} < 60
+      for: 1m
+      annotations:
+        description: disk space less than 60 GB. Current value is {{ $value }} GB.
+
+  - name: tcp-check
+    rules:
+    - alert: tcp port unreachable
+      expr: probe_success{job="tcp_check"} == 0
+      for: 1m
+      labels:
+      severity: firing
+      annotations:
+        title: Node {{ $labels.instance }} is down
+        description: Failed to scrape {{ $labels.job }} on {{ $labels.instance }} for more than 1 minutes. Node seems down.
