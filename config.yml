@@ -1,0 +1,17 @@
+/etc/alertmanager/config.yml
+==============================================================
+route:
+ group_by: [Alertname]
+ receiver: telegram
+ repeat_interval: 1h
+
+receivers:
+- name: slack
+  slack_configs:
+  - api_url: https://hooks.slack.com/services/XXXXXX
+    channel: XXXX
+
+- name: telegram
+  webhook_configs:
+  - send_resolved: true
+    url: 'http://127.0.0.1:8080'
